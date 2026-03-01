@@ -1,0 +1,21 @@
+name: ${PROJECT_NAME}
+
+services:
+  postgres:
+    container_name: postgres
+    labels:
+      - "Project=${PROJECT_NAME}"
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /var/lib/postgresql
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - ./volumes/pg_data:/var/lib/postgresql
+
+    # This command fixes the folder ownership AND THEN starts Postgres
+    command: >
+      sh -c "chown -R postgres:postgres /var/lib/postgresql && 
+             exec gosu postgres docker-entrypoint.sh postgres"
